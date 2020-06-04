@@ -1,17 +1,19 @@
 # coding:utf-8#
 
 import socket
-
-url = input ("Enter:")
-
 try:
+    url = input('Enter : ')
     words = url.split('/')
-    hosts = words[2]
+    print(words)
+    if words[0] != 'http:':
+        hosts = words[0]
+        url = 'http://' + url
+    else:
+        hosts = words[2]
+
     mysock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     mysock.connect((hosts, 80))
     mysock.send(('GET'+url+'HTTP/1.0\r\n\r\n').encode())
-    # cmd = 'GET http://data.pr4e.org/romeo.txt HTTP/1.0\r\n\r\n'.encode()
-    # mysock.send(cmd)
 
     while True:
         data = mysock.recv(512)
@@ -21,3 +23,5 @@ try:
     mysock.close()
 except:
     print("not formatted properly")
+
+
