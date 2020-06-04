@@ -20,10 +20,10 @@ try:
         data = mysock.recv(512)
         if len(data) < 1:
             break
-        n=n+(data.decode(0))
+        n=n+(data.decode())
         print(data.decode(),end='')
     print(n[:3001])
-    print("Total number")
+    print("Total number:", len(n))
     mysock.close()
 except:
     print("not formatted properly")
