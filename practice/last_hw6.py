@@ -8,7 +8,7 @@ input = '''[
       "x" : "7",
       "name": "Chuck"
       }
-    }
+    ]
 '''
 info = json.loads(input)
 print('User count:', len(info))

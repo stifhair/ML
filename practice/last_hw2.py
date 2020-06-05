@@ -1,9 +1,9 @@
 import urllib.request , urllib.parse, urllib.error
 import re
 import ssl
-import bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
-ctx = ssl.create.default.context()
+ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
