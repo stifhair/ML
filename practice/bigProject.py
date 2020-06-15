@@ -50,6 +50,9 @@ for i in range(0, len(std_res)):
     str_expr2 = "date=={}".format(std_res[i+1])
     df1 = yield_table.query(str_expr1)
     df2 = yield_table.query(str_expr2)
+    for index_name in index:
+        imsi = df1.iloc[0][index_name]/df2.iloc[0][index_name] - 1
+
 
 
 
