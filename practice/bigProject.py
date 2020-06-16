@@ -107,7 +107,7 @@ for i in range(0, len(std_res)-1):
 
 # 결과를 그래프로 만든다.
 # res_name port_yld_lst gl_yld_lst
-
+# port_vol_lst          global_vol_lst
 
 def create_x(t, w, n, d):
     return [t*x + w*n for x in range(d)]
@@ -128,12 +128,18 @@ plt.show()
 
 
 
-
-
-
-
-
-print (row_table.head())
-print (row_table.tail())
+value_a_x = create_x(2, 1, 1, len(res_name))
+value_b_x = create_x(2, 1, 2, len(res_name))
+ax = plt.subplot()
+ax.bar(value_a_x, global_vol_lst)
+ax.bar(value_b_x, port_vol_lst)
+middle_x = [(a+b)/2 for (a,b) in zip(value_a_x, value_b_x)]
+ax.set_xticks(middle_x)
+ax.set_xticklabels(res_name)
+plt.title('Global & Portpolio vol BackTesting')
+plt.legend(['Global' , 'Portfolio'])
+plt.xlabel('Time')
+plt.ylabel('Yield')
+plt.show()
 
 
