@@ -107,9 +107,7 @@ for i in range(0, len(std_res)-1):
 
 # 결과를 그래프로 만든다.
 # res_name port_yld_lst gl_yld_lst
-#topics = ['A', 'B', 'C', 'D', 'E']
-#value_a = [80, 85, 84, 83, 86]
-#value_b = [73, 78, 77, 82, 86]
+
 
 def create_x(t, w, n, d):
     return [t*x + w*n for x in range(d)]
@@ -122,6 +120,10 @@ ax.bar(value_b_x, port_yld_lst)
 middle_x = [(a+b)/2 for (a,b) in zip(value_a_x, value_b_x)]
 ax.set_xticks(middle_x)
 ax.set_xticklabels(res_name)
+plt.title('Global & Portpolio Yield BackTesting')
+plt.legend(['Global' , 'Portfolio'])
+plt.xlabel('Time')
+plt.ylabel('Yield')
 plt.show()
 
 
