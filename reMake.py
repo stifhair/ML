@@ -4,13 +4,11 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.svm import SVC
 from sklearn.decomposition import KernelPCA
-import numpy as np
 import pandas as pd
 wine = pd.read_csv('./train.csv')
 
-
+print('<< train>>')
 #pre_processing
 def pre(dataset):
     from sklearn.preprocessing import LabelEncoder
@@ -26,7 +24,6 @@ def split(X,y):
     return X_train , X_test , y_train, y_test
 
 
-#ready dataset
 X,y =pre(wine)
 
 
@@ -43,6 +40,9 @@ class PCA_preprocessing:
         self.PCA_time = time.time()
         self.X_PCA = self.pca.fit_transform(X)
         self.PCA_time = time.time() - self.PCA_time
+        print('{0} PCA VAR {1}: '.format(n,self.pca.explained_variance_ratio_))
+
+
 
         # IncrementalPCA
         self.n_batches = 2
@@ -52,23 +52,28 @@ class PCA_preprocessing:
             self.inc_pca.partial_fit(X_batch)
         self.X_IPCA = self.inc_pca.transform(X)
         self.IPCA_time = time.time() - self.IPCA_time
+        print('{0} IPCA VAR {1}: '.format(n,self.pca.explained_variance_ratio_))
 
         # Randomized PCA
         self.rnd_pca = PCA(n_components=n, svd_solver='randomized')
         self.RPCA_time = time.time()
         self.X_RPCA = self.rnd_pca.fit_transform(X)
         self.RPCA_time = time.time() - self.RPCA_time
+        print('{0} RPCA VAR {1}: '.format(n,self.pca.explained_variance_ratio_))
 
     def getTime(self):
         print('PCA fit_transform time : ', self.PCA_time)
         print('IPCA fit_transform time : ', self.IPCA_time)
         print('IPCA fit_transform time : ', self.RPCA_time)
+        print('PCA VAR : ', self.PCA_var)
+        print('IPCA VAR : ', self.IPCA_var)
+        print('IPCA VAR : ', self.RPCA_var)
+
 
     def getX(self):
         return self.X_PCA , self.X_IPCA , self.X_RPCA
 
 
-#make models : SGD, KNN, DT, SVC
 class model:
     def __init__(self,X_train,X_test,y_train,y_test):
         import time
@@ -95,11 +100,6 @@ class model:
         self.tree_time = time.time() - self.tree_time
 
 
-        self.svm_clf = SVC(gamma='auto', C=2, random_state=42, probability=True)
-        self.svc_time = time.time()
-        self.svm_clf.fit(self.X, self.y)
-        self.svc_time = time.time() - self.svc_time
-
         self.mlp_clf = MLPClassifier()
         self.mlp_time = time.time()
         self.mlp_clf.fit(self.X, self.y)
@@ -115,7 +115,6 @@ class model:
         print('SGD classifier Accuracy : {}'.format(self.getScore(self.sgd_clf)))
         print('KNN classifier Accuracy : {}'.format(self.getScore(self.knn_clf)))
         print('Decision Tree classifier Accuracy : {}'.format(self.getScore(self.tree_clf)))
-        print('SVM classifier Accuracy : {}'.format(self.getScore(self.svm_clf)))
         print('MLP classifier Accuracy : {}'.format(self.getScore(self.mlp_clf)))
         print()
 
@@ -127,7 +126,6 @@ class model:
         print('SGD Prediction : ',self.sgd_clf.predict([self.X_test[13]]))
         print('KNN Prediction : ',self.knn_clf.predict([self.X_test[13]]))
         print('Decision Tree Prediction : ',self.tree_clf.predict([self.X_test[13]]))
-        print('SVC Prediction : ',self.svm_clf.predict([self.X_test[13]]))
         print('MLP Prediction : ', self.mlp_clf.predict([self.X_test[13]]))
         print()
 
@@ -136,7 +134,7 @@ class model:
         print('SGD Classifier : {}'.format(self.sgd_time))
         print('knn Classifier : {}'.format(self.knn_time))
         print('tree Classifier : {}'.format(self.tree_time))
-        print('SVC Classifier : {}'.format(self.svc_time))
+        #print('SVC Classifier : {}'.format(self.svc_time))
         print('MLP Classifier : {}'.format(self.mlp_time))
         print()
 
@@ -184,37 +182,10 @@ printAll(X,y)
 PCA_print(X,y,2)
 #n_components = 4
 PCA_print(X,y,4)
-#n_components = 6
-PCA_print(X,y,6)
-
-#n_components = 6
-print('<SGD>')
-grid_sgd_6 = grid_kernelPCA(SGDClassifier(max_iter=5, tol=-np.infty, random_state=42, loss='log'),6)
-print('Best hyperparameter: {}'.format(grid_sgd_6.best_params_))
-
-print('<KNN>')
-grid_knn_6 = grid_kernelPCA(KNeighborsClassifier(n_neighbors=2),6)
-print('Best hyperparameter: {}'.format(grid_knn_6.best_params_))
-
-print('<Decision Tree>')
-grid_tree_6 = grid_kernelPCA(DecisionTreeClassifier(max_depth=2, random_state=42),6)
-print('Best hyperparameter: {}'.format(grid_tree_6.best_params_))
-
-print('<SVC>')
-grid_svc_6 = grid_kernelPCA(SVC(gamma='auto', C=2, random_state=42, probability=True),6)
-print('Best hyperparameter: {}'.format(grid_svc_6.best_params_))
 
 
-best_rbf_pca = KernelPCA(n_components = 2 , kernel ='rbf' , gamma=0.322, fit_inverse_transform=True)
-best_sigmoid_pca = KernelPCA(n_components = 2 , kernel ='sigmoid' , gamma=0.3, fit_inverse_transform=True)
 from sklearn.metrics import mean_squared_error
 def getMSE(pca):
     X_reduced = pca.fit_transform(X)
     X_preimage = pca.inverse_transform(X_reduced)
     print(mean_squared_error(X,X_preimage))
-
-print('<Kernel rbf>')
-getMSE(best_rbf_pca)
-print('<Kernel sigmoid>')
-getMSE(best_sigmoid_pca)
-
